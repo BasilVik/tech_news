@@ -12,3 +12,27 @@ RSS_SOURCES = [
         "feed_url": "https://feeds.arstechnica.com/arstechnica/index",
     },
 ]
+
+# --- Настройки фильтрации и скоринга ---
+
+BLACKLIST_KEYWORDS = {
+    "sponsored",
+    "webinar",
+    "podcast",
+    "video",
+    "promo",
+    "advertisement",
+}
+
+
+KEYWORD_BOOSTS = {
+    "ai": 3,
+    "llm": 3,
+    "agent": 2,
+    "agents": 2,
+    "security": 2,
+    "database": 2,
+    "architecture": 2,
+    "engineering": 2,
+    "programming": 1,
+}
