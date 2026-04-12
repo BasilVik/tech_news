@@ -16,18 +16,23 @@ class RSSCollector:
         self.feed_url = feed_url
         self.timeout = timeout
 
-    def collect(self) -> List[NewsItem]:
-        """
-        Загружает RSS/Atom-ленту и возвращает список новостей
-        в едином формате NewsItem.
-        """
-        response = requests.get(self.feed_url, timeout=self.timeout)
-        response.raise_for_status()
+    def collect(self, limit: int | None = None) -> List[NewsItem]:
+        try:
+            response = requests.get(self.feed_url, timeout=self.timeout)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            print(f"[ERROR] Failed to load RSS '{self.source_name}': {exc}")
+            return []
 
         feed = feedparser.parse(response.content)
-        items: List[NewsItem] = []
 
-        for entry in feed.entries:
+        if getattr(feed, "bozo", False):
+            print(f"[WARN] RSS '{self.source_name}' may be malformed")
+
+        items: List[NewsItem] = []
+        entries = feed.entries[:limit] if limit else feed.entries
+
+        for entry in entries:
             title = self._get_title(entry)
             url = self._get_url(entry)
             published_at = self._get_published_at(entry)
@@ -63,10 +68,6 @@ class RSSCollector:
 
     @staticmethod
     def _get_published_at(entry: object) -> Optional[datetime]:
-        """
-        Пробует распарсить дату публикации.
-        Если даты нет или формат странный — возвращает None.
-        """
         raw_date = (
             getattr(entry, "published", None)
             or getattr(entry, "updated", None)
@@ -77,7 +78,6 @@ class RSSCollector:
             return None
 
         try:
-            dt = parsedate_to_datetime(raw_date)
-            return dt
+            return parsedate_to_datetime(raw_date)
         except (TypeError, ValueError, IndexError):
             return None
