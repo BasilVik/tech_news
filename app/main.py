@@ -8,12 +8,14 @@ if __name__ == "__main__" and __package__ is None:
 
 from app.services.pipeline import get_top_news
 from app.services.formatter import format_news_digest
+from app.delivery.telegram import send_to_telegram
 
 
 def main() -> None:
     top_items = get_top_news(limit=10, per_source_limit=25)
     digest = format_news_digest(top_items)
     print(digest)
+    send_to_telegram(digest)
 
 
 if __name__ == "__main__":
