@@ -1,3 +1,32 @@
+import os
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE = BASE_DIR / ".env"
+
+
+def load_env() -> None:
+    if not ENV_FILE.exists():
+        return
+
+    with ENV_FILE.open("r", encoding="utf-8") as file:
+        for line in file:
+            stripped_line = line.strip()
+
+            if not stripped_line or stripped_line.startswith("#"):
+                continue
+
+            if "=" not in stripped_line:
+                continue
+
+            key, value = stripped_line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+
+            os.environ.setdefault(key, value)
+
+
 RSS_SOURCES = [
     {
         "source_name": "Hacker News",
