@@ -6,23 +6,14 @@ import sys
 if __name__ == "__main__" and __package__ is None:
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.models import NewsItem
 from app.services.pipeline import get_top_news
-
-
-def print_news(items: list[NewsItem]) -> None:
-    for index, item in enumerate(items, start=1):
-        print(f"{index}. {item.title}")
-        print(f"   Source: {item.source}")
-        print(f"   URL: {item.url}")
-        print(f"   Published: {item.published_at}")
-        print(f"   Score: {item.score}")
-        print()
+from app.services.formatter import format_news_digest
 
 
 def main() -> None:
     top_items = get_top_news(limit=10, per_source_limit=25)
-    print_news(top_items)
+    digest = format_news_digest(top_items)
+    print(digest)
 
 
 if __name__ == "__main__":
