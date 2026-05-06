@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import os
+import sys
+
+if __name__ == "__main__" and __package__ is None:
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app.models import NewsItem
 from app.services.pipeline import get_top_news
 
